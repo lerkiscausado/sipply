@@ -3,9 +3,13 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 
 
+
 const encryptPassword = async (password) => {
     const salt = await bcrypt.genSalt(10)
     return bcrypt.hash(password, salt)
+}
+const validatePassword =  async (password,pass) => {
+    return await bcrypt.compare(password,pass)    
 }
 // --- Listar Usuarios ---
 export const getUsuarios=async(req,res)=>{
@@ -67,8 +71,8 @@ export const login=async (req,res,next)=>{
                 auth:false,
                 message:"El Email no existe"
             })
-        }
-        if(!(password===response.dataValues.password)){
+        }        
+        if(! await validatePassword(password,response.dataValues.password)){
             return res.status(200).send({
                 auth:false,
                 message:"Contraseña invalida"
